@@ -92,7 +92,7 @@ const
 
   // Version
 const
-  UCVersion = '2.31 RC4';
+  UCVersion = '2.35 RC4';
 {$WARNINGS OFF}
 
 type
@@ -778,6 +778,13 @@ uses
 { TUserControl }
 
 constructor TUserControl.Create(AOwner: TComponent);
+    function GetFieldName(FieldValue: string; const Prop: string): string;
+    begin
+      Result := FieldValue;
+      if FieldValue = '' then
+        Result := RetornaLingua(fLanguage, Prop);
+    end;
+
 begin
   inherited;
   FCurrentUser := TUCCurrentUser.Create(Self);
@@ -800,8 +807,13 @@ begin
 
   if csDesigning in ComponentState then
   begin
-    with TableUsers do
+
+
+  {$REGION 'Codigo Antigo Tabela Usuario '}
+
+  (*    with (TableUsers) do
     begin
+     TableUsers.TableName := GetFieldName(TableUsers.TableName, 'Const_TableUsers_TableName');
       if TableName = '' then
         TableName := RetornaLingua(fLanguage, 'Const_TableUsers_TableName');
       if FieldUserID = '' then
@@ -843,18 +855,46 @@ begin
       if FieldUserInative = '' then
         FieldUserInative := RetornaLingua(fLanguage,
           'Const_TableUser_FieldUserInative');
-                //  Lotacao - Mauri
-      if FieldUserDepartment = '' then
-        FieldUserDepartment := RetornaLingua(fLanguage, 'Const_TableUser_FieldUserDepartment'); { Mauri Lima }
+*)
+{$ENDREGION}
+
+    TableUsers.TableName := GetFieldName(TableUsers.TableName, 'Const_TableUsers_TableName');
+    TableUsers.FieldUserID := GetFieldName(TableUsers.FieldUserID, 'Const_TableUsers_FieldUserID');
+    TableUsers.FieldUserName := GetFieldName(TableUsers.FieldUserName, 'Const_TableUsers_FieldUserName');
+    TableUsers.FieldLogin := GetFieldName(TableUsers.FieldLogin, 'Const_TableUsers_FieldLogin');
+    TableUsers.FieldPassword := GetFieldName(TableUsers.FieldPassword, 'Const_TableUsers_FieldPassword');
+    TableUsers.FieldEmail := GetFieldName(TableUsers.FieldEmail, 'Const_TableUsers_FieldEmail');
+    TableUsers.FieldPrivileged := GetFieldName(TableUsers.FieldPrivileged, 'Const_TableUsers_FieldPrivileged');
+    TableUsers.FieldTypeRec := GetFieldName(TableUsers.FieldTypeRec, 'Const_TableUsers_FieldTypeRec');
+    TableUsers.FieldProfile := GetFieldName(TableUsers.FieldProfile, 'Const_TableUsers_FieldProfile');
+    TableUsers.FieldKey := GetFieldName(TableUsers.FieldKey, 'Const_TableUsers_FieldKey');
+    TableUsers.FieldDateExpired := GetFieldName(TableUsers.FieldDateExpired, 'Const_TableUsers_FieldDateExpired');
+    TableUsers.FieldUserExpired := GetFieldName(TableUsers.FieldUserExpired, 'Const_TableUser_FieldUserExpired');
+    TableUsers.FieldUserDaysSun := GetFieldName(TableUsers.FieldUserDaysSun, 'Const_TableUser_FieldUserDaysSun');
+    TableUsers.FieldUserInative := GetFieldName(TableUsers.FieldUserInative, 'Const_TableUser_FieldUserInative');
+    TableUsers.FieldUserDepartment := GetFieldName(TableUsers.FieldUserDepartment,'Const_TableUser_FieldUserDepartment');
+    TableUsers.FieldUserType := GetFieldName(TableUsers.FieldUserType,'Const_TableUser_FieldUserDepartment');
+    TableUsers.FieldUserEmpresa := GetFieldName(TableUsers.FieldUserEmpresa,'Const_TableUser_FieldUserEmpresa');
+//    TableUsers.FieldImage := GetFieldName(TableUsers.FieldImage, 'Const_TableUsers_FieldImage');
+
+   //  Lotacao - Mauri
+
+    {$REGION 'Codigo Antigo Lotacao'}
+
+      //  Lotacao - Mauri
+//      if FieldUserDepartment = '' then
+//         FieldUserDepartment := RetornaLingua(fLanguage, 'Const_TableUser_FieldUserDepartment'); { Mauri Lima }
       //   Tipo Usuario      Mauri
-      if FieldUserType = '' then
-        FieldUserType := RetornaLingua(fLanguage, 'Const_TableUser_FieldUserType'); { mauri }
+//      if FieldUserType = '' then
+//        FieldUserType := RetornaLingua(fLanguage, 'Const_TableUser_FieldUserType'); { mauri }
 
-      if FieldUserEmpresa = '' then
-        FieldUserEmpresa := RetornaLingua(fLanguage, 'Const_TableUser_FieldUserEmpresa'); // Empresa  Mauri Lima  26/01/2017
+//      if FieldUserEmpresa = '' then
+//        FieldUserEmpresa := RetornaLingua(fLanguage, 'Const_TableUser_FieldUserEmpresa'); // Empresa  Mauri Lima  26/01/2017
 
-    end;
+//    end;
 
+
+(*
     with TableRights do
     begin
       if TableName = '' then
@@ -897,7 +937,19 @@ begin
           'Const_TableUsersLogged_FieldData');
     end;
 
+*)
+
+    {$ENDREGION}
+
     //  Lotacao - Department  - Mauri
+    TableUserDepartment.TableName := GetFieldName(TableUserDepartment.TableName,'Const_TableDepartment_TableName');
+    TableUserDepartment.FieldIDDepartment := GetFieldName(TableUserDepartment.FieldIDDepartment,'Const_TableDepartment_FieldIDDepartment');
+    TableUserDepartment.FieldNameDepartment := GetFieldName(TableUserDepartment.FieldNameDepartment,'Const_TableDepartment_FieldNameDepartment');
+    TableUserDepartment.FieldStatusDepartment := GetFieldName(TableUserDepartment.FieldStatusDepartment,'Const_TableDepartment_FieldStatusDepartment');
+{$REGION 'Codigo ANtigo Tabela Department'}
+
+(*
+
     with TableUserDepartment do
     begin
       if TableName = '' then
@@ -910,8 +962,18 @@ begin
          FieldStatusDepartment := RetornaLingua(fLanguage, 'Const_TableDepartment_FieldStatusDepartment');
 
     end;
+ *)
+{$ENDREGION}
 
     // Empresa Mauri 26/01/2017
+
+    TableUserEmpresa.TableName := GetFieldName(TableUserEmpresa.TableName,'Const_TableEmpresa_TableName');
+    TableUserEmpresa.FieldIDEmpresa := GetFieldName(TableUserEmpresa.FieldIDEmpresa,'Const_TableEmpresa_FieldIDEmpresa');
+    TableUserEmpresa.FieldNameEmpresa := GetFieldName(TableUserEmpresa.FieldNameEmpresa,'Const_TableEmpresa_FieldNameEmpresa');
+
+{$REGION 'Codigo Antigo Empresa Mauri 26/01/2017'}
+
+(*
 
     with TableUserEmpresa do
     begin
@@ -922,6 +984,10 @@ begin
       if FieldNameEmpresa = '' then
         FieldNameEmpresa := RetornaLingua(fLanguage, 'Const_TableEmpresa_FieldNameEmpresa');
     end;
+*)
+
+{$ENDREGION}
+
 
     if LogControl.TableLog = '' then
       LogControl.TableLog := 'UCLog';

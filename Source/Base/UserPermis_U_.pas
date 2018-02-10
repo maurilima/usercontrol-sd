@@ -134,8 +134,6 @@ type
     FormName: String;
   end;
 
-  TTreeViewEvent = procedure(Marca: Boolean) of object;
-
   TUserPermis = class(TForm)
     Panel1: TPanel;
     LbDescricao: TLabel;
@@ -157,9 +155,6 @@ type
     GroupBox1: TGroupBox;
     CBBloqueado: TCheckBox;
     CBLiberado: TCheckBox;
-    pmTree: TPopupMenu;
-    miExpandAll: TMenuItem;
-    miCollapseAll: TMenuItem;
     procedure BtGravaClick(Sender: TObject);
     procedure TreeMenuClick(Sender: TObject);
     procedure BtCancelClick(Sender: TObject);
@@ -225,42 +220,33 @@ procedure TUserPermis.BtGravaClick(Sender: TObject);
 var
   Contador: Integer;
 begin
-  TBitBtn(Sender).Enabled := False;
-  Self.Caption := 'Waiting...';
-  Self.Enabled := False;
 
-  try
-    with FUserControl.TableRights do
-    begin
-      FUserControl.DataConnector.UCExecSQL('Delete from ' + TableName + ' Where '
-        + FieldUserID + ' = ' + IntToStr(FTempIdUser) + ' and ' + FieldModule +
-        ' = ' + QuotedStr(FUserControl.ApplicationID));
-      FUserControl.DataConnector.UCExecSQL('Delete from ' + TableName +
-        'EX Where ' + FieldUserID + ' = ' + IntToStr(FTempIdUser) + ' and ' +
-        FieldModule + ' = ' + QuotedStr(FUserControl.ApplicationID));
-    end;
-
-    for Contador := 0 to TreeMenu.Items.Count - 1 do
-      if PTreeMenu(TreeMenu.Items[Contador].Data).Selecionado = 1 then
-        FUserControl.AddRight(FTempIdUser,
-          PTreeMenu(TreeMenu.Items[Contador].Data).MenuName);
-
-    for Contador := 0 to TreeAction.Items.Count - 1 do
-      if PTreeAction(TreeAction.Items[Contador].Data).Selecionado = 1 then
-        FUserControl.AddRight(FTempIdUser,
-          PTreeAction(TreeAction.Items[Contador].Data).MenuName);
-
-    // Extra Rights
-    for Contador := 0 to Pred(TreeControls.Items.Count) do
-      if PTreeControl(TreeControls.Items[Contador].Data).Selecionado = 1 then
-        FUserControl.AddRightEX(FTempIdUser, FUserControl.ApplicationID,
-          PTreeControl(TreeControls.Items[Contador].Data).FormName,
-          PTreeControl(TreeControls.Items[Contador].Data).CompName);
-
-  finally
-    Self.Enabled := True;
-    TBitBtn(Sender).Enabled := True;
+  with FUserControl.TableRights do
+  begin
+    FUserControl.DataConnector.UCExecSQL('Delete from ' + TableName + ' Where '
+      + FieldUserID + ' = ' + IntToStr(FTempIdUser) + ' and ' + FieldModule +
+      ' = ' + QuotedStr(FUserControl.ApplicationID));
+    FUserControl.DataConnector.UCExecSQL('Delete from ' + TableName +
+      'EX Where ' + FieldUserID + ' = ' + IntToStr(FTempIdUser) + ' and ' +
+      FieldModule + ' = ' + QuotedStr(FUserControl.ApplicationID));
   end;
+
+  for Contador := 0 to TreeMenu.Items.Count - 1 do
+    if PTreeMenu(TreeMenu.Items[Contador].Data).Selecionado = 1 then
+      FUserControl.AddRight(FTempIdUser,
+        PTreeMenu(TreeMenu.Items[Contador].Data).MenuName);
+
+  for Contador := 0 to TreeAction.Items.Count - 1 do
+    if PTreeAction(TreeAction.Items[Contador].Data).Selecionado = 1 then
+      FUserControl.AddRight(FTempIdUser,
+        PTreeAction(TreeAction.Items[Contador].Data).MenuName);
+
+  // Extra Rights
+  for Contador := 0 to Pred(TreeControls.Items.Count) do
+    if PTreeControl(TreeControls.Items[Contador].Data).Selecionado = 1 then
+      FUserControl.AddRightEX(FTempIdUser, FUserControl.ApplicationID,
+        PTreeControl(TreeControls.Items[Contador].Data).FormName,
+        PTreeControl(TreeControls.Items[Contador].Data).CompName);
 
   Close;
 end;
@@ -408,7 +394,8 @@ begin
           FTempMPointer);
       end;
 //    TreeAction.FullCollapse;
-    TreeAction.FullExpand;
+    TreeAction.FullExpand;  // Mauri
+
     TreeMenu.Perform(WM_VSCROLL, SB_TOP, 0);
   end;
 
@@ -456,7 +443,7 @@ begin
         end;
       end;
 //      TreeAction.FullCollapse;
-      TreeAction.FullExpand;
+    TreeAction.FullExpand;  // Mauri
 
       TreeMenu.Perform(WM_VSCROLL, SB_TOP, 0);
     end;
@@ -517,7 +504,8 @@ begin
         [rfReplaceAll]), FTempAPointer);
     end;
 //    TreeAction.FullCollapse;
-    TreeAction.FullExpand;
+    TreeAction.FullExpand;  // Mauri
+
     TreeAction.Perform(WM_VSCROLL, SB_TOP, 0);
   end;
 
@@ -575,9 +563,7 @@ begin
       TreeControls.Items.AddChildObject(TempNode, Desc, FTempCPointer);
       FTempCPointer := nil;
     end;
-//    TreeAction.FullCollapse;
-    TreeAction.FullExpand;
-    TreeControls.FullExpand;
+    TreeAction.FullCollapse;
     TreeControls.Perform(WM_VSCROLL, SB_TOP, 0);
   end;
 
@@ -703,7 +689,8 @@ end;
 
 procedure TUserPermis.TreeMenuClick(Sender: TObject);
 begin
-  ClickTreeView(Sender, TreeMenuItem);
+  if not FChangingTree then
+    TreeMenuItem(True);
 end;
 
 procedure TUserPermis.BtCancelClick(Sender: TObject);
@@ -919,17 +906,19 @@ end;
 
 procedure TUserPermis.miExpandAllClick(Sender: TObject);
 begin
-  GetTreeViewActive.FullExpand;
+    GetTreeViewActive.FullExpand;
 end;
 
 procedure TUserPermis.TreeActionClick(Sender: TObject);
 begin
-  ClickTreeView(Sender, TreeActionItem);
+  if not FChangingTree then
+    TreeActionItem(True);
 end;
 
 procedure TUserPermis.TreeControlsClick(Sender: TObject);
 begin
-  ClickTreeView(Sender, TreeControlItem);
+  if not FChangingTree then
+    TreeControlItem(True);
 end;
 
 procedure TUserPermis.TreeMenuKeyPress(Sender: TObject; var Key: char);

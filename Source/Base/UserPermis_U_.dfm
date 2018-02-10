@@ -425,7 +425,7 @@ object UserPermis: TUserPermis
     Top = 35
     Width = 487
     Height = 491
-    ActivePage = PageControls
+    ActivePage = PageAction
     Align = alClient
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clBlack
@@ -448,7 +448,6 @@ object UserPermis: TUserPermis
         Images = ImageList1
         Indent = 19
         ParentCtl3D = False
-        PopupMenu = pmTree
         ReadOnly = True
         RightClickSelect = True
         TabOrder = 0
@@ -466,11 +465,11 @@ object UserPermis: TUserPermis
         Width = 479
         Height = 463
         Align = alClient
+        AutoExpand = True
         Ctl3D = True
         Images = ImageList1
         Indent = 19
         ParentCtl3D = False
-        PopupMenu = pmTree
         ReadOnly = True
         RightClickSelect = True
         TabOrder = 0
@@ -487,11 +486,11 @@ object UserPermis: TUserPermis
         Width = 479
         Height = 463
         Align = alClient
+        AutoExpand = True
         Ctl3D = True
         Images = ImageList1
         Indent = 19
         ParentCtl3D = False
-        PopupMenu = pmTree
         ReadOnly = True
         RightClickSelect = True
         TabOrder = 0
@@ -504,7 +503,7 @@ object UserPermis: TUserPermis
     Left = 336
     Top = 144
     Bitmap = {
-      494C010103000500780010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C010103000500100010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000001000000001002000000000000010
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -642,17 +641,5 @@ object UserPermis: TUserPermis
       9FF79F97800700009FF79FD7800700009FF79FF7800700008007800780070000
       8007800780070000FFFFFFFFFFFF000000000000000000000000000000000000
       000000000000}
-  end
-  object pmTree: TPopupMenu
-    Left = 204
-    Top = 107
-    object miExpandAll: TMenuItem
-      Caption = 'Expandir todos'
-      OnClick = miExpandAllClick
-    end
-    object miCollapseAll: TMenuItem
-      Caption = 'Recolher todos'
-      OnClick = miCollapseAllClick
-    end
   end
 end
