@@ -1947,6 +1947,7 @@ begin
   FTableUsersLogged.Free;
   FTableUserDepartment.Free;     // Mauri
   FTableUserEmpresa.Free;  // Mauri
+//  FVerifThread.Free;  // Mauri
 
   if Assigned(FControlList) then
     FControlList.Free;
@@ -1983,27 +1984,31 @@ begin
     Exit;
 
   try
-
-    if not DataConnector.UCFindTable(FTableRights.TableName) then
-      CriaTabelaRights;
-
-    if not DataConnector.UCFindTable(FTableRights.TableName + 'EX') then
-      CriaTabelaRights(True); // extra rights table
-
-    if not DataConnector.UCFindTable(TableUsersLogged.TableName) then
-      UsersLogged.CriaTableUserLogado;
-
-    if LogControl.Active then
-    Begin
-      if not DataConnector.UCFindTable(LogControl.TableLog) then
-        CriaTabelaLog;
-    End;
-
-    CriaTabelaDepartment(DataConnector.UCFindTable(FTableUserDepartment.TableName)); //  Mauri Lima
-    CriaTabelaEmpresa(DataConnector.UCFindTable(FTableUserEmpresa.TableName)); //  Empresa Mauri Lima 26/01/2017
-
-
-    CriaTabelaUsuarios(DataConnector.UCFindTable(FTableUsers.TableName));
+//
+//    if not DataConnector.UCFindTable(FTableRights.TableName) then
+//    begin
+//      {  Conexao Firedac da erro aqui nao sei porque }
+//     //  Lembrar de Tirar pra outras versoes
+//       //  CriaTabelaRights;
+//    end;
+//
+//    if not DataConnector.UCFindTable(FTableRights.TableName + 'EX') then
+//      CriaTabelaRights(True); // extra rights table
+//
+//    if not DataConnector.UCFindTable(TableUsersLogged.TableName) then
+//      UsersLogged.CriaTableUserLogado;
+//
+//    if LogControl.Active then
+//    Begin
+//      if not DataConnector.UCFindTable(LogControl.TableLog) then
+//        CriaTabelaLog;
+//    End;
+//
+//    CriaTabelaDepartment(DataConnector.UCFindTable(FTableUserDepartment.TableName)); //  Mauri Lima
+//    CriaTabelaEmpresa(DataConnector.UCFindTable(FTableUserEmpresa.TableName)); //  Empresa Mauri Lima 26/01/2017
+//
+//
+//    CriaTabelaUsuarios(DataConnector.UCFindTable(FTableUsers.TableName));
 
     // Atualizador de Versoes
     AtualizarVersao;

@@ -93,7 +93,7 @@ uses
   System.UITypes,
   {$IFEND}
   
-  UCBase;
+  UCBase, FireDAC.Comp.Client;
 
 type
   TfrmIncluirUsuario = class(TForm)
@@ -353,10 +353,29 @@ begin
   begin
     ComboPerfil.ListSource.DataSet.Close;
     ComboPerfil.ListSource.DataSet.Open;
+
+   (*
+      Adicionado Teste de e FDQuery pois na Inclusao de Usaurio o DbLookComboBox
+      So apresentava uma Linha devido ao RecordCount ser = 1
+      Este Mesmo Erro nao Ocorre Usando o DbExpress
+      Somente Ocorre no FIreDac
+   *)
+
+   if ComboPerfil.ListSource.DataSet is TFDQuery then
+      ComboPerfil.ListSource.DataSet.Last;
+
     ComboLotacao.ListSource.DataSet.Close;   // Mauri Lotacao
     ComboLotacao.ListSource.DataSet.Open;    // Mauri Lotacao
+   if ComboLotacao.ListSource.DataSet is TFDQuery then
+      ComboLotacao.ListSource.DataSet.Last;
+
+
     ComboEmpresa.ListSource.DataSet.Close;   //  Mauri Empresa
     ComboEmpresa.ListSource.DataSet.Open;   //  Mauri Empresa
+   if ComboEmpresa.ListSource.DataSet is TFDQuery then
+      ComboEmpresa.ListSource.DataSet.Last;
+
+
 
     if FUserControl.CurrentUser.UserType = 0 then
        cbTipoUsuario.Enabled := False

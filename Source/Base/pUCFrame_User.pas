@@ -90,22 +90,17 @@ uses
   Windows,
   DBGrids,
   Grids,
-  DBClient,
-  ADODB,
+
 
   {$IF CompilerVersion >= 23}
-    System.UITypes,
-    IBX.IBQuery,
-{$ELSE}
-    IBQuery,
-{$IFEND}
+  System.UITypes,
+  {$IFEND}
+
   IncUser_U,
   SenhaForm_U,
   UcBase,
-{$IF CompilerVersion >= 23}
-  FireDAC.Comp.Client,
-{$IFEND}
-  UserPermis_U;
+  UserPermis_U, Datasnap.DBClient,
+  FireDAC.Comp.Client;
 
 type
   TUCFrame_User = class(TFrame)
@@ -129,8 +124,7 @@ type
     procedure BtPassClick(Sender: TObject);
     procedure BtExcluiClick(Sender: TObject);
     procedure EdPesUserEnter(Sender: TObject);
-    procedure EdPesUserKeyUp(Sender: TObject; var Key: Word;
-      Shift: TShiftState);
+    procedure EdPesUserKeyPress(Sender: TObject; var Key: Char);
   protected
     FormSenha: TCustomForm;
     FfrmIncluirUsuario: TfrmIncluirUsuario;
@@ -151,12 +145,7 @@ type
 implementation
 
 uses
-  UCMessages,
-{$IFDEF DELPHI17_UP}
-  Data.Win.ADODB,
-{$ENDIF}
-  
-  ZDataset;
+  UCMessages;
 
 {$R *.dfm}
 
@@ -294,28 +283,42 @@ begin
 end;
 
 procedure TUCFrame_User.EdPesUserEnter(Sender: TObject);
-var
-   indice : string;
 begin
-
   //  Mauri 28/01/2016
   //  Ordenar Em Memoria
   // Veirifca se DBExpres ou Firedac
   // ClientDataSet nao Funciona com FDQuery para Index e outras Propriedades
   if rgPesUser.ItemIndex = 1 then
-     indice :=  'Nome'
+   begin
+      if DataUser.DataSet is TFDQuery then
+          TFDQuery( DataUser.DataSet).IndexFieldNames:= 'Nome'
+      else
+          TClientDataSet( DataUser.DataSet).IndexFieldNames:= 'Nome'
+
+   end
   else
-     indice :=  'Login';
-  if DataUser.DataSet is TClientDataSet then
-     TClientDataSet( DataUser.DataSet).IndexFieldNames:= indice;
-  if DataUser.DataSet is TZQuery then
-     TZQuery( DataUser.DataSet).IndexFieldNames:= indice;
-{$IFDEF DELPHI17_UP}   // Firedac disponviel a partir da versao XE3
+     begin
+      if DataUser.DataSet is TFDQuery then
+         TFDQuery( DataUser.DataSet).IndexFieldNames:= 'Login'
+      else
+         TClientDataSet( DataUser.DataSet).IndexFieldNames:= 'Login'
+     end;
+
+end;
+
+procedure TUCFrame_User.EdPesUserKeyPress(Sender: TObject; var Key: Char);
+begin
+  //  Mauri 28/01/2016
+  //  Ordenar Em Memoria
+  // Veirifca se DBExpres ou Firedac
+  // ClientDataSet nao Funciona com FDQuery para Index e outras Propriedades
+
   if DataUser.DataSet is TFDQuery then
-     TFDQuery( DataUser.DataSet).IndexFieldNames:= indice;
-{$ENDIF}
-  if DataUser.DataSet is TZQuery then
-     TZQuery( DataUser.DataSet).IndexFieldNames:= indice;
+     TFDQuery( DataUser.DataSet).FindNearest( [ EdPesUser.Text])
+  else
+     TClientDataSet( DataUser.DataSet).FindNearest( [ EdPesUser.Text])
+
+
 end;
 
 procedure TUCFrame_User.BtAcessClick(Sender: TObject);
@@ -476,8 +479,7 @@ begin
     FfrmIncluirUsuario.lbPerfil.Caption := LabelPerfil;
     FfrmIncluirUsuario.btGravar.Caption := BtSave;
     FfrmIncluirUsuario.btCancela.Caption := BtCancel;
-    FfrmIncluirUsuario.Position :=
-      Self.FUsercontrol.UserSettings.WindowsPosition;
+    FfrmIncluirUsuario.Position := Self.FUsercontrol.UserSettings.WindowsPosition;
     FfrmIncluirUsuario.LabelExpira.Caption := ExpiredIn;
     FfrmIncluirUsuario.LabelDias.Caption := Day;
     FfrmIncluirUsuario.ckUserExpired.Caption := CheckExpira;
@@ -493,21 +495,6 @@ begin
     end;
     FfrmIncluirUsuario.ComboStatus.ItemIndex := 0;
   end;
-end;
-
-procedure TUCFrame_User.EdPesUserKeyUp(Sender: TObject; var Key: Word;
-  Shift: TShiftState);
-Var
-   indice : string;
-begin
- //  Mauri 28/01/2016
- //  Busca No Data Set em Memoria
- // Evita nova consulta no banco ja que o select anterior trouxe todos os tegistros
-  if rgPesUser.ItemIndex = 1 then
-     indice :=  'Nome'
-  else
-     indice :=  'Login';
-  DataUser.DataSet.Locate(indice,Trim(EdPesUser.Text),[loPartialKey]);
 end;
 
 end.
